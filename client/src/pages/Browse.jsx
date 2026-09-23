@@ -1,3 +1,4 @@
+import { applyToProject } from "../api/applications";
 import Navbar from "../components/Navbar";
 import { useEffect, useState } from "react";
 import { getRecommendedProjects, getAllProjects } from "../api/projects";
@@ -6,6 +7,9 @@ function Browse() {
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [applyingTo, setApplyingTo] = useState(null);
+  const [message, setMessage] = useState("");
+  const [applySuccess, setApplySuccess] = useState("");
 
   useEffect(() => {
     const fetchProjects = async () => {
@@ -24,6 +28,17 @@ function Browse() {
 
     fetchProjects();
   }, []);
+
+  const handleApply = async (projectId) => {
+  try {
+    await applyToProject(projectId, message);
+    setApplySuccess(projectId);
+    setApplyingTo(null);
+    setMessage("");
+  } catch (err) {
+    alert(err.response?.data?.message || "Failed to apply");
+  }
+};
 
   if (loading) {
     return (
@@ -98,6 +113,42 @@ function Browse() {
             <p className="text-text-secondary text-sm">
               by {project.createdBy?.name || "Unknown"}
             </p>
+            {applySuccess === project._id ? (
+  <p className="text-accent-green text-sm mt-3">
+    ✓ Application submitted
+  </p>
+) : applyingTo === project._id ? (
+  <div className="mt-4">
+    <textarea
+      value={message}
+      onChange={(e) => setMessage(e.target.value)}
+      placeholder="Why do you want to join this project?"
+      className="w-full bg-surface border border-text-secondary/30 rounded px-3 py-2 text-text-primary text-sm placeholder-text-secondary/50 focus:outline-none focus:border-accent-green"
+      rows={3}
+    />
+    <div className="flex gap-2 mt-2">
+      <button
+        onClick={() => handleApply(project._id)}
+        className="bg-accent-green text-bg text-sm px-4 py-1.5 rounded"
+      >
+        Submit
+      </button>
+      <button
+        onClick={() => setApplyingTo(null)}
+        className="border border-text-secondary/30 text-text-primary text-sm px-4 py-1.5 rounded"
+      >
+        Cancel
+      </button>
+    </div>
+  </div>
+) : (
+  <button
+    onClick={() => setApplyingTo(project._id)}
+    className="mt-3 text-accent-green text-sm hover:underline"
+  >
+    Apply to this project →
+  </button>
+)}
           </div>
         ))}
       </div>
