@@ -14,3 +14,6 @@ export const updateApplicationStatus = (applicationId, status) => {
 export const applyToProject = (projectId, message) => {
   return api.post(`/applications/${projectId}/apply`, { message }, authHeader());
 };
+export const getMyApplications = () => {
+  return api.get("/applications/my-applications", authHeader());
+};

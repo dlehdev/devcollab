@@ -1,3 +1,5 @@
+import Profile from "./pages/Profile";
+import Applications from "./pages/Applications";
 import MyProjects from "./pages/MyProjects";
 import Browse from "./pages/Browse";
 import Register from "./pages/Register";
@@ -13,6 +15,8 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/browse" element={<Browse />} />
         <Route path="/my-projects" element={<MyProjects />} />
+        <Route path="/applications" element={<Applications />} />
+        <Route path="/profile" element={<Profile />} />
       </Routes>
     </BrowserRouter>
   );
