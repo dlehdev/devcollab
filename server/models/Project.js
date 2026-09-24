@@ -15,6 +15,7 @@ const projectSchema = new mongoose.Schema({
     ref: "User", 
     required: true 
   },
+  teamSize: { type: Number, default: 1 },
 }, { timestamps: true });
 
 module.exports = mongoose.model("Project", projectSchema);

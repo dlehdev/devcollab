@@ -1,3 +1,4 @@
+const Application = require("../models/Application");
 const Project = require("../models/Project");
 
 const calculateMatchScore = (userSkills, requiredSkills) => {
@@ -13,7 +14,7 @@ const calculateMatchScore = (userSkills, requiredSkills) => {
 
 const createProject = async (req, res) => {
   try {
-    const { title, description, requiredSkills, techStack, status } = req.body;
+    const { title, description, requiredSkills, techStack, status , teamSize} = req.body;
 
     const project = await Project.create({
       title,
@@ -21,6 +22,7 @@ const createProject = async (req, res) => {
       requiredSkills,
       techStack,
       status,
+      teamSize,
       createdBy: req.userId,
     });
 
@@ -50,8 +52,19 @@ const getAllProjects = async (req, res) => {
       ];
     }
 
-    const projects = await Project.find(filter).populate("createdBy", "name email");
-    res.status(200).json(projects);
+const projects = await Project.find(filter).populate("createdBy", "name email");
+
+const projectsWithCounts = await Promise.all(
+  projects.map(async (project) => {
+    const acceptedCount = await Application.countDocuments({
+      project: project._id,
+      status: "accepted",
+    });
+    return { ...project.toObject(), acceptedCount };
+  })
+);
+
+res.status(200).json(projectsWithCounts);
   } catch (error) {
     res.status(500).json({ message: "Failed to fetch projects", error: error.message });
   }
