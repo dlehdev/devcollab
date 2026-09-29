@@ -1,3 +1,4 @@
+import { jwtDecode } from "jwt-decode";
 import { applyToProject } from "../api/applications";
 import Navbar from "../components/Navbar";
 import { useEffect, useState } from "react";
@@ -10,6 +11,8 @@ function Browse() {
   const [applyingTo, setApplyingTo] = useState(null);
   const [message, setMessage] = useState("");
   const [applySuccess, setApplySuccess] = useState("");
+  const token = localStorage.getItem("token");
+  const currentUserId = token ? jwtDecode(token).userId : null; 
 
   useEffect(() => {
     const fetchProjects = async () => {
@@ -110,14 +113,15 @@ function Browse() {
               ))}
             </div>
 
-            <p className="text-text-secondary text-sm">
+        <p className="text-text-secondary text-sm">
               by {project.createdBy?.name || "Unknown"}
-            </p>
-            {applySuccess === project._id ? (
-  <p className="text-accent-green text-sm mt-3">
-    ✓ Application submitted
-  </p>
-) : applyingTo === project._id ? (
+             </p>
+            {project.createdBy?._id === currentUserId ? (
+             <p className="text-text-secondary text-sm mt-3">Your project</p>
+            ) : applySuccess === project._id ? (  <p className="text-accent-green text-sm mt-3">
+             ✓ Application submitted
+           </p>
+     ) : applyingTo === project._id ? (
   <div className="mt-4">
     <textarea
       value={message}

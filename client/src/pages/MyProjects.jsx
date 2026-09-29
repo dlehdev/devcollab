@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
 import { getAllProjects } from "../api/projects";
@@ -22,11 +23,15 @@ function MyProjects() {
         setMyProjects(mine);
 
         let allApps = [];
-        for (const project of mine) {
-          const appsRes = await getApplicationsForProject(project._id);
-          allApps = [...allApps, ...appsRes.data];
-        }
-        setApplications(allApps);
+    for (const project of mine) {
+       const appsRes = await getApplicationsForProject(project._id);
+       const tagged = appsRes.data.map((app) => ({
+    ...app,
+       projectTitle: project.title,
+  }));
+  allApps = [...allApps, ...tagged];
+}
+setApplications(allApps);
       } catch (err) {
         console.error(err);
       } finally {
@@ -75,6 +80,12 @@ function MyProjects() {
         <h1 className="font-heading text-4xl text-text-primary mb-2">
           My projects.
         </h1>
+        
+        <Link to="/create-project"
+        className="inline-block mb-8 bg-accent-green text-bg text-sm font-medium px-4 py-2 rounded hover:opacity-90 transition"> 
+        + New project
+        </Link>
+
         <p className="text-text-secondary mb-10">
           Review interest, make decisions, and keep your open builds moving.
         </p>
@@ -89,29 +100,45 @@ function MyProjects() {
                 You haven't created any projects yet.
               </p>
             )}
-            {myProjects.map((project) => (
-              <div
-                key={project._id}
-                className="border-b border-text-secondary/10 pb-4 mb-4"
-              >
-                <span className="text-accent-green text-xs font-mono">
-                  ● {project.status.toUpperCase()}
-                </span>
-                <h3 className="font-heading text-xl text-text-primary mt-1">
-                  {project.title}
-                </h3>
-                <div className="flex flex-wrap gap-2 mt-2">
-                  {project.requiredSkills?.map((skill) => (
-                    <span
-                      key={skill}
-                      className="font-mono text-xs bg-surface border border-text-secondary/20 rounded px-2 py-1 text-text-secondary"
-                    >
-                      # {skill}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            ))}
+         {myProjects.map((project) => (
+  <div
+    key={project._id}
+    className="border-b border-text-secondary/10 pb-4 mb-4"
+  >
+    <span className="text-accent-green text-xs font-mono">
+      ● {project.status.toUpperCase()}
+    </span>
+    <h3 className="font-heading text-xl text-text-primary mt-1">
+      {project.title}
+    </h3>
+
+    {/* NEW: description, right after the title */}
+    <p className="text-text-secondary text-sm mt-2">{project.description}</p>
+
+    <div className="flex flex-wrap gap-2 mt-2">
+      {project.requiredSkills?.map((skill) => (
+        <span
+          key={skill}
+          className="font-mono text-xs bg-surface border border-text-secondary/20 rounded px-2 py-1 text-text-secondary"
+        >
+          # {skill}
+        </span>
+      ))}
+    </div>
+
+    {/* NEW: tech stack, right after the skills */}
+    <div className="flex flex-wrap gap-2 mt-2">
+      {project.techStack?.map((tech) => (
+        <span
+          key={tech}
+          className="font-mono text-xs bg-surface border border-accent-green/30 rounded px-2 py-1 text-accent-green"
+        >
+          {tech}
+        </span>
+      ))}
+    </div>
+  </div>
+))}
           </div>
 
           <div>
@@ -132,6 +159,9 @@ function MyProjects() {
                   <div>
                     <p className="text-text-primary font-medium">
                       {app.applicant?.name}
+                    </p>
+                    <p className="text-accent-green font-mono text-xs mt-0.5">
+                     applied to {app.projectTitle}
                     </p>
                     <p className="text-text-secondary text-sm mt-1">
                       {app.message}

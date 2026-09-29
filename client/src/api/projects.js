@@ -17,3 +17,10 @@ export const getMyProjects = () => {
     headers: { Authorization: `Bearer ${token}` },
   });
 };
+
+export const createProject = (data) => {
+  const token = localStorage.getItem("token");
+  return api.post("/projects", data, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+};

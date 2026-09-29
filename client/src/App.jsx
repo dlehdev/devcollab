@@ -1,3 +1,4 @@
+import CreateProject from "./pages/CreateProject";
 import Profile from "./pages/Profile";
 import Applications from "./pages/Applications";
 import MyProjects from "./pages/MyProjects";
@@ -17,6 +18,7 @@ function App() {
         <Route path="/my-projects" element={<MyProjects />} />
         <Route path="/applications" element={<Applications />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/create-project" element={<CreateProject />} />
       </Routes>
     </BrowserRouter>
   );
