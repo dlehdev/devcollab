@@ -24,3 +24,17 @@ export const createProject = (data) => {
     headers: { Authorization: `Bearer ${token}` },
   });
 };
+
+export const updateProject = (id, data) => {
+  const token = localStorage.getItem("token");
+  return api.put(`/projects/${id}`, data, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+};
+
+export const deleteProject = (id) => {
+  const token = localStorage.getItem("token");
+  return api.delete(`/projects/${id}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+};

@@ -1,10 +1,13 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import TagInput from "../components/TagInput";
-import { createProject } from "../api/projects";
+import { createProject, updateProject } from "../api/projects";
+import api from "../api/axios";
 
 function CreateProject() {
+  const { id } = useParams();
+  const isEditMode = Boolean(id);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [requiredSkills, setRequiredSkills] = useState([]);
@@ -14,27 +17,47 @@ function CreateProject() {
   const [submitting, setSubmitting] = useState(false);
   const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError("");
-    setSubmitting(true);
+  useEffect(() => {
+  if (isEditMode) {
+    api.get(`/projects/${id}`).then((res) => {
+      const p = res.data;
+      setTitle(p.title);
+      setDescription(p.description);
+      setRequiredSkills(p.requiredSkills || []);
+      setTechStack(p.techStack || []);
+      setTeamSize(p.teamSize || 1);
+    });
+  }
+}, [id, isEditMode]);
 
-    try {
-      await createProject({
-        title,
-        description,
-        requiredSkills,
-        techStack,
-        teamSize: Number(teamSize),
-        status: "open",
-      });
-      navigate("/my-projects");
-    } catch (err) {
-      setError(err.response?.data?.message || "Failed to create project");
-    } finally {
-      setSubmitting(false);
+  const handleSubmit = async (e) => {
+  e.preventDefault();
+  setError("");
+  setSubmitting(true);
+
+  try {
+    const data = {
+      title,
+      description,
+      requiredSkills,
+      techStack,
+      teamSize: Number(teamSize),
+      status: "open",
+    };
+
+    if (isEditMode) {
+      await updateProject(id, data);
+    } else {
+      await createProject(data);
     }
-  };
+
+    navigate("/my-projects");
+  } catch (err) {
+    setError(err.response?.data?.message || "Failed to save project");
+  } finally {
+    setSubmitting(false);
+  }
+};
 
   return (
     <div className="min-h-screen bg-bg">
@@ -42,7 +65,7 @@ function CreateProject() {
       <div className="px-6 py-12 max-w-2xl mx-auto">
         <p className="text-accent-green font-mono text-xs mb-2">// NEW_PROJECT</p>
         <h1 className="font-heading text-4xl text-text-primary mb-2">
-          Start a build.
+          {isEditMode ? "Edit your build." : "Start a build."}
         </h1>
         <p className="text-text-secondary mb-10">
           Describe what you're making and who you need on the team.
@@ -106,7 +129,11 @@ function CreateProject() {
             disabled={submitting}
             className="bg-accent-green text-bg font-medium px-6 py-2 rounded hover:opacity-90 transition"
           >
-            {submitting ? "Creating..." : "Create project"}
+            {submitting
+              ? "Saving..."
+              : isEditMode
+              ? "Save changes"
+              : "Create project"}
           </button>
         </form>
       </div>

@@ -49,6 +49,22 @@ function App() {
       </ProtectedRoute>
     }
   />
+  <Route
+  path="/create-project"
+  element={
+    <ProtectedRoute>
+      <CreateProject />
+    </ProtectedRoute>
+  }
+/>
+   <Route
+  path="/edit-project/:id"
+  element={
+    <ProtectedRoute>
+      <CreateProject />
+    </ProtectedRoute>
+  }
+/>
 </Routes>
     </BrowserRouter>
   );

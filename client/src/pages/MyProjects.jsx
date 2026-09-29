@@ -1,5 +1,6 @@
-import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { deleteProject } from "../api/projects";
 import Navbar from "../components/Navbar";
 import { getAllProjects } from "../api/projects";
 import { getApplicationsForProject, updateApplicationStatus } from "../api/applications";
@@ -12,6 +13,18 @@ function MyProjects() {
 
   const token = localStorage.getItem("token");
   const currentUserId = token ? jwtDecode(token).userId : null;
+
+  const navigate = useNavigate();
+
+  const handleDelete = async (projectId) => {
+    if (!window.confirm("Delete this project? This cannot be undone.")) return;
+    try {
+      await deleteProject(projectId);
+      setMyProjects((prev) => prev.filter((p) => p._id !== projectId));
+    } catch (err) {
+      alert(err.response?.data?.message || "Failed to delete project");
+    }
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -137,6 +150,19 @@ setApplications(allApps);
         </span>
       ))}
     </div>
+    <div className="flex gap-3 mt-3">
+  <Link
+    to={`/edit-project/${project._id}`}
+    className="text-accent-green text-xs hover:underline">Edit</Link>
+    
+   <button
+    onClick={() => handleDelete(project._id)}
+    className="text-accent-coral text-xs hover:underline"
+  >
+    Delete
+   </button>
+    </div>
+    
   </div>
 ))}
           </div>
