@@ -140,7 +140,9 @@ const deleteProject = async (req, res) => {
       return res.status(403).json({ message: "Not authorized to delete this project" });
     }
 
-    await Project.findByIdAndDelete(req.params.id);
+       await Project.findByIdAndDelete(req.params.id);
+       await Application.deleteMany({ project: req.params.id });
+       
     res.status(200).json({ message: "Project deleted successfully" });
   } catch (error) {
     res.status(500).json({ message: "Project deletion failed", error: error.message });
