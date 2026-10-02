@@ -1,3 +1,4 @@
+import { withdrawApplication } from "../api/applications";
 import { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
 import { getMyApplications } from "../api/applications";
@@ -6,6 +7,16 @@ function Applications() {
   const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+
+  const handleWithdraw = async (applicationId) => {
+  if (!window.confirm("Withdraw this application?")) return;
+  try {
+    await withdrawApplication(applicationId);
+    setApplications((prev) => prev.filter((app) => app._id !== applicationId));
+  } catch (err) {
+    alert(err.response?.data?.message || "Failed to withdraw");
+  }
+};
 
   useEffect(() => {
     const fetchApplications = async () => {
@@ -74,11 +85,21 @@ function Applications() {
                   {app.message}
                 </p>
               </div>
-              <span
-                className={`text-xs font-mono border rounded px-2 py-1 ${statusColor[app.status]}`}
-              >
-                {app.status.toUpperCase()}
-              </span>
+          <div className="text-right">
+            <span
+               className={`text-xs font-mono border rounded px-2 py-1 ${statusColor[app.status]}`}
+               >
+              {app.status.toUpperCase()}
+            </span>
+            {app.status === "pending" && (
+            <button
+             onClick={() => handleWithdraw(app._id)}
+             className="block text-accent-coral text-xs mt-2 hover:underline ml-auto"
+            >
+              Withdraw
+            </button>
+           )}
+          </div>
             </div>
           ))}
         </div>

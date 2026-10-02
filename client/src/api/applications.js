@@ -17,3 +17,6 @@ export const applyToProject = (projectId, message) => {
 export const getMyApplications = () => {
   return api.get("/applications/my-applications", authHeader());
 };
+export const withdrawApplication = (applicationId) => {
+  return api.delete(`/applications/${applicationId}`, authHeader());
+};

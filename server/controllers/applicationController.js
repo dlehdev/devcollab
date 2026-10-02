@@ -92,9 +92,27 @@ const getMyApplications = async (req, res) => {
   }
 };
 
+const withdrawApplication = async (req, res) => {
+  try {
+    const application = await Application.findById(req.params.id);
+    if (!application) {
+      return res.status(404).json({ message: "Application not found" });
+    }
+    if (application.applicant.toString() !== req.userId) {
+      return res.status(403).json({ message: "Not authorized to withdraw this application" });
+    }
+
+    await Application.findByIdAndDelete(req.params.id);
+    res.status(200).json({ message: "Application withdrawn" });
+  } catch (error) {
+    res.status(500).json({ message: "Failed to withdraw application", error: error.message });
+  }
+};
+
 module.exports = {
   applyToProject,
   getApplicationsForProject,
   updateApplicationStatus,
   getMyApplications,
+  withdrawApplication,
 };
