@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import { applyToProject } from "../api/applications";
 import Navbar from "../components/Navbar";
@@ -97,9 +98,11 @@ function Browse() {
               )}
             </div>
 
-            <h2 className="font-heading text-2xl text-text-primary mb-2">
+            <Link to={`/project/${project._id}`}>
+            <h2 className="font-heading text-2xl text-text-primary mb-2 hover:text-accent-green transition">
               {project.title}
             </h2>
+            </Link>
             <p className="text-text-secondary mb-3">{project.description}</p>
 
             <div className="flex flex-wrap gap-2 mb-3">

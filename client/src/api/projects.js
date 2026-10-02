@@ -38,3 +38,7 @@ export const deleteProject = (id) => {
     headers: { Authorization: `Bearer ${token}` },
   });
 };
+
+export const getProjectById = (id) => {
+  return api.get(`/projects/${id}`);
+};

@@ -12,6 +12,14 @@ const calculateMatchScore = (userSkills, requiredSkills) => {
   return Math.round((matched.length / requiredSkills.length) * 100);
 };
 
+const withAcceptedCount = async (project) => {
+  const acceptedCount = await Application.countDocuments({
+    project: project._id,
+    status: "accepted",
+  });
+  return { ...project.toObject(), acceptedCount };
+};
+
 const createProject = async (req, res) => {
   try {
     const { title, description, requiredSkills, techStack, status , teamSize} = req.body;
@@ -103,7 +111,8 @@ const getProjectById = async (req, res) => {
     if (!project) {
       return res.status(404).json({ message: "Project not found" });
     }
-    res.status(200).json(project);
+    const withCount = await withAcceptedCount(project);
+    res.status(200).json(withCount);
   } catch (error) {
     res.status(500).json({ message: "Failed to fetch project", error: error.message });
   }
@@ -142,7 +151,7 @@ const deleteProject = async (req, res) => {
 
        await Project.findByIdAndDelete(req.params.id);
        await Application.deleteMany({ project: req.params.id });
-       
+
     res.status(200).json({ message: "Project deleted successfully" });
   } catch (error) {
     res.status(500).json({ message: "Project deletion failed", error: error.message });

@@ -1,3 +1,4 @@
+import ProjectDetails from "./pages/ProjectDetails";
 import ProtectedRoute from "./components/ProtectedRoute";
 import CreateProject from "./pages/CreateProject";
 import Profile from "./pages/Profile";
@@ -64,6 +65,11 @@ function App() {
       <CreateProject />
     </ProtectedRoute>
   }
+/>
+<Route
+ path="/project/:id" 
+ element={<ProjectDetails />
+ } 
 />
 </Routes>
     </BrowserRouter>
